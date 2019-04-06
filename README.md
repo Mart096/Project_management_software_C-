@@ -1,4 +1,4 @@
-# Project_management_software_C\#
+# Project management software - C\#
 Project management software written in C# with Visual Studio 2012.
 Application created in 2017.
 
