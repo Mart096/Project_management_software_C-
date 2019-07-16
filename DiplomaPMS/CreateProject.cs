@@ -40,6 +40,7 @@ namespace DiplomaPMS
 
         public CreateProject(string projdir, string projectname)
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("pl-PL");
             InitializeComponent();
             this.projdir = projdir;
             this.projname = projectname;
@@ -83,17 +84,18 @@ namespace DiplomaPMS
         private void calendar1_DateSelected(object sender, DateRangeEventArgs e)
         {
             var mcalendar = sender as MonthCalendar;
-            startDate.Text = mcalendar.SelectionStart.ToString();
-            /*DateTime tempdate = mcalendar.SelectionStart;
-            endDate.Text = tempdate.AddDays(duplicateProjTimeLength).ToString();*/
+            startDate.Text = mcalendar.SelectionStart.ToString("dd/MM/yyyy");
+            //DateTime tempdate = new DateTime(mcalendar.SelectionStart.Year, mcalendar.SelectionStart.Month, mcalendar.SelectionStart.Day);
+            //startDate.Text = //tempdate.ToString("dd/MM/yyyy");
+
         }
 
         private void calendar1DuplicateProject_DateSelected(object sender, DateRangeEventArgs e)
         {
             var mcalendar = sender as MonthCalendar;
-            startDate.Text = mcalendar.SelectionStart.ToString();
+            startDate.Text = mcalendar.SelectionStart.ToString("dd/MM/yyyy");
             DateTime tempdate = mcalendar.SelectionStart.Date;
-            endDate.Text = tempdate.AddDays(duplicateProjTimeLength).ToString();
+            endDate.Text = tempdate.AddDays(duplicateProjTimeLength).ToString("dd/MM/yyyy");
         }
 
         private void calendar1_Leave(object sender, EventArgs e)
@@ -114,13 +116,12 @@ namespace DiplomaPMS
             {
                 monthCalendar2.Visible = false;
             }
-
         }
 
         private void calendar2_DateSelected(object sender, DateRangeEventArgs e)
         {
             var mcalendar = sender as MonthCalendar;
-            endDate.Text = mcalendar.SelectionStart.ToString();
+            endDate.Text = mcalendar.SelectionStart.ToString("dd/MM/yyyy");
         }
 
         private void calendar2_Leave(object sender, EventArgs e)
@@ -140,14 +141,28 @@ namespace DiplomaPMS
             {
                 ShowMessage(0);
             }
-            else if (this.startDate.MaskCompleted == false || this.endDate.MaskCompleted == false) 
+            else if (this.startDate.MaskCompleted == false || this.endDate.MaskCompleted == false)
             {
                 ShowMessage(4);
             }
             else
             {
-                DateTime tempsd = DateTime.ParseExact(this.startDate.Text, "dd/MM/yyyy", CultureInfo.CurrentCulture);
-                DateTime temped = DateTime.ParseExact(this.endDate.Text, "dd/MM/yyyy", CultureInfo.CurrentCulture);
+
+                DateTime tempsd = DateTime.Today;// = DateTime.ParseExact(this.startDate.Text, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pl-PL")); //CultureInfo.CurrentCulture
+                DateTime temped = DateTime.Today;// = DateTime.ParseExact(this.endDate.Text, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pl-PL"));
+
+                try
+                {
+                    tempsd = DateTime.ParseExact(this.startDate.Text, "yyyy/MM/dd", CultureInfo.CurrentCulture); //CultureInfo.CurrentCulture
+                    temped = DateTime.ParseExact(this.endDate.Text, "yyyy/MM/dd", CultureInfo.CurrentCulture);
+                }
+                catch (FormatException)
+                {
+                    ShowMessage(6);
+                    tempsd = DateTime.Today;
+                    temped = DateTime.Today.AddDays(1);
+                }
+
                 if (tempsd.Date < temped.Date)
                 {
 
@@ -212,7 +227,7 @@ namespace DiplomaPMS
                     var query = from result in doc.Element("Project").Elements("Project_details")
                                 select result;
                     var query1 = from result in doc.Element("Project").Element("Tasks").Elements("Task")
-                                select result;
+                                 select result;
                     /*var query2 = from result in doc.Element("Project").Element("Members").Elements("Member")
                                  select result;
                     var query3 = from result in doc.Element("Project").Element("Finances").Elements("Finance")
@@ -235,7 +250,7 @@ namespace DiplomaPMS
                     query.Elements("Budget").First().Value = Convert.ToString(this.budgetValue.Value);
                     query.Elements("Status").First().Value = "New";
 
-                    foreach (var task in query1) 
+                    foreach (var task in query1)
                     {
                         DateTime tempstartd = Convert.ToDateTime(task.Element("Start_date").Value);
                         DateTime tempendd = Convert.ToDateTime(task.Element("End_date").Value);
@@ -273,7 +288,7 @@ namespace DiplomaPMS
             this.Focus();
         }*/
 
-        private void DuplicateProjectFillData() 
+        private void DuplicateProjectFillData()
         {
             foreach (var project in Directory.EnumerateFiles(this.projdir, "*.xml"))
             {
@@ -283,12 +298,12 @@ namespace DiplomaPMS
                                  select qr.Element("Name").Value).First();
 
                 //MessageBox.Show(""+ this.projname +" "+ tpname);
-                if (this.projname == tpname) 
+                if (this.projname == tpname)
                 {
                     this.ppath = project;
                     var query = (from result in doc.Element("Project").Elements("Project_details")
-                                select result).First();
-                    this.duplicateProjTimeLength=((Convert.ToDateTime(query.Element("End_date").Value)).Date - (Convert.ToDateTime(query.Element("Start_date").Value)).Date).TotalDays;
+                                 select result).First();
+                    this.duplicateProjTimeLength = ((Convert.ToDateTime(query.Element("End_date").Value)).Date - (Convert.ToDateTime(query.Element("Start_date").Value)).Date).TotalDays;
 
                     this.projectName.Text = query.Element("Name").Value;
                     this.startDate.Text = query.Element("Start_date").Value;
@@ -303,11 +318,11 @@ namespace DiplomaPMS
                 }
             }
 
-            
-            
+
+
         }
 
-        private void ShowMessage(int messagenumb) 
+        private void ShowMessage(int messagenumb)
         {
             if (messagenumb == 0)
             {
@@ -317,7 +332,7 @@ namespace DiplomaPMS
             {
                 MessageBox.Show("Project was saved successfully!", "Information", MessageBoxButtons.OK, MessageBoxIcon.None);
             }
-            else if (messagenumb == 2) 
+            else if (messagenumb == 2)
             {
                 MessageBox.Show("Error occured during project creation. Project was NOT saved!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -332,6 +347,10 @@ namespace DiplomaPMS
             else if (messagenumb == 5)
             {
                 MessageBox.Show("Project's end date has been set before the start date. End date must be set after start date.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else if (messagenumb == 6)
+            {
+                MessageBox.Show("Project's start date or end date has wrong format! Change start/end date to value compatible with gregorian calendar. Temporary values were filled instead.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }
