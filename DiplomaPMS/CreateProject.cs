@@ -153,8 +153,8 @@ namespace DiplomaPMS
 
                 try
                 {
-                    tempsd = DateTime.ParseExact(this.startDate.Text, "yyyy/MM/dd", CultureInfo.CurrentCulture); //CultureInfo.CurrentCulture
-                    temped = DateTime.ParseExact(this.endDate.Text, "yyyy/MM/dd", CultureInfo.CurrentCulture);
+                    tempsd = DateTime.ParseExact(this.startDate.Text, "dd/MM/yyyy", CultureInfo.CurrentCulture); //CultureInfo.CurrentCulture
+                    temped = DateTime.ParseExact(this.endDate.Text, "dd/MM/yyyy", CultureInfo.CurrentCulture);
                 }
                 catch (FormatException)
                 {

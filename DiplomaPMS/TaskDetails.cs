@@ -131,7 +131,7 @@ namespace DiplomaPMS
         private void calendar1_DateSelected(object sender, DateRangeEventArgs e)
         {
             var mcalendar = sender as MonthCalendar;
-            startDate.Text = mcalendar.SelectionStart.ToString();
+            startDate.Text = mcalendar.SelectionStart.ToString("dd/MM/yyyy");
         }
 
         private void calendar1_Leave(object sender, EventArgs e)
@@ -158,7 +158,7 @@ namespace DiplomaPMS
         private void calendar2_DateSelected(object sender, DateRangeEventArgs e)
         {
             var mcalendar = sender as MonthCalendar;
-            endDate.Text = mcalendar.SelectionStart.ToString();
+            endDate.Text = mcalendar.SelectionStart.ToString("dd/MM/yyyy");
         }
 
         private void calendar2_Leave(object sender, EventArgs e)

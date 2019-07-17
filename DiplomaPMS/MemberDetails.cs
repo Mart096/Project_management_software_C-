@@ -56,7 +56,7 @@ namespace DiplomaPMS
         private void calendar1_DateSelected(object sender, DateRangeEventArgs e)
         {
             var mcalendar = sender as MonthCalendar;
-            birthDate.Text = mcalendar.SelectionStart.ToString();
+            birthDate.Text = mcalendar.SelectionStart.ToString("dd/MM/yyyy");
         }
 
         private void calendar1_Leave(object sender, EventArgs e)
